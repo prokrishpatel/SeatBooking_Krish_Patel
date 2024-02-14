@@ -33,16 +33,7 @@ const App = () => {
         }
     }, [deleteSet]);
      
-    // Update visual representation of seats selected for deletion
-    useEffect(() => {
-        deleteSet.forEach(seat => {
-            const seatElement = document.getElementById(seat);
-            if (seatElement) {
-                seatElement.style.background = "white";
-                seatElement.style.borderColor = "red";
-            }
-        });
-    }, [deleteSet]);
+    
 
     // Maintain modification arrays changes
     useEffect(() => {
@@ -113,7 +104,16 @@ const App = () => {
         setFemale(femaleSet);
         setSpecial(specialSet);
     }, [seats]);
-
+    // Update visual representation of seats selected for deletion
+    useEffect(() => {
+        deleteSet.forEach(seat => {
+            const seatElement = document.getElementById(seat);
+            if (seatElement) {
+                seatElement.style.background = "white";
+                seatElement.style.borderColor = "red";
+            }
+        });
+    }, [deleteSet]);
     // Function to handle any seat click/select
     const handleSelectSeat = (seat) => {
         const updatedSeats = { ...seats };
