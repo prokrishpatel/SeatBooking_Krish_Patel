@@ -4,6 +4,8 @@ import Allocate from "./Allocate"; // Importing allocate component
 import Modify from "./Modify"; // Importing modify component
 import SeatData from '../Data/seatData.json'; // Importing data set from JSON structure
 import '../style/App.css'; // Importing CSS styles for the App component
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const App = () => {
     const [seats, setSeats] = useState(null); // State for seats data
@@ -21,6 +23,7 @@ const App = () => {
         setTimeout(() => {
             setSeats(SeatData.seats);
         }, 300); 
+        toast.info('Please select seats to assign or change seat nature')
     }, []);
 
     // Maintain visibility of delete button based on deleteSet state
@@ -137,10 +140,24 @@ const App = () => {
 
     // Function to reset complete seat allocation
     const reset = () => {
-        const confirmed = window.confirm("Are you sure you want to reset the layout?");
-        if (confirmed) {
-            setSeats(SeatData.seats);
-        }
+        Swal.fire({
+            title: "Do you want to Reset layout?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Reset it!"
+            }).then((result) => {
+            if (result.isConfirmed) {
+                setSeats(SeatData.seats);
+                Swal.fire({
+                title: "Layout Reset Successful",
+                text: "Ready for a Fresh Start!",
+                icon: "success"
+                });
+            }
+        });
     }
     
     // Handle allocation button click
@@ -169,6 +186,13 @@ const App = () => {
             updatedSeats[seat] = category;
         });
         setSeats(updatedSeats);
+        if(category=="Block"){
+            toast.success(`Seats ${category}ed`);
+        }
+        else{
+            toast.success(`Seats Allocated for ${category}s`);
+        }
+        
     }
 
     // Handle modify submit button
@@ -187,16 +211,39 @@ const App = () => {
             if (seat !== 'D') updatedSeats[seat] = "Block";
         })
         setSeats(updatedSeats);
+        toast.success('Seats Modified Sucessfully');
     }
-
-    // Handle delete request
-    const handleDelete = () => {
+    const DeleteConfirm = ()=>{
         const updatedSeats = { ...seats };
         deleteSet.forEach(seat => {
             updatedSeats[seat] = "Open";
         });
         setDeleteSet(new Set()); 
         setSeats(updatedSeats);
+    }
+    // Handle delete request
+    const handleDelete = () => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!"
+          }).then((result) => {
+            if (result.isConfirmed) {
+                DeleteConfirm();
+              Swal.fire({
+                title: "Deleted!",
+                text: "Your file has been deleted.",
+                icon: "success"
+              });
+            }
+            else{
+                setDeleteSet(new Set());
+            }
+          });
     }
     
     return (
@@ -231,6 +278,7 @@ const App = () => {
             {/* Conditional Rendering of Allocate and Modify */}
             {allocateBox && <Allocate onclose={onClose} seats={seats} result={allocateAns}/>}
             {modifBox && <Modify onclose={onClose} male={Array.from(male)} female={Array.from(female)} special={Array.from(special)} block={Array.from(blocked)} result={modifyAns}/>}
+            <ToastContainer />
         </React.Fragment>
     );
 }
