@@ -5,6 +5,6 @@ import './style/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <App />
+    <App />{/* This entry point for Program  */}
   </React.StrictMode>,
 )
